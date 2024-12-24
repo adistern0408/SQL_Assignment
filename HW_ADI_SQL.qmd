@@ -1,0 +1,107 @@
+---
+title: "sql.hw.adi"
+format: html
+author : Adi sternberg
+---
+
+```{r}
+
+
+install.packages("DBI")
+install.packages("RSQLite")
+
+library(DBI)
+library(RSQLite)
+
+con_chocolate <- dbConnect(SQLite(), dbname = "C:\\Users\\רומי שטרנברג\\Desktop\\עדי לימודים בן גוריון\\שנה שלישית\\סמסטר א\\מיומנויות במדעי הנתונים\\מטלה SQL\\chocolate.sqlite")
+
+query1 <- "
+  SELECT salesreps.Name, SUM(orders.amount) AS total_candy_bars_sold
+  FROM salesreps INNER JOIN orders USING (srid)
+  WHERE
+  orders.sale_date BETWEEN '2022-01-01' AND '2022-12-31'
+  AND salesreps.year_joined = 2010
+  GROUP BY salesreps.Name;
+
+"
+
+result1 <- dbGetQuery(con_chocolate, query1)
+
+print(result1)
+
+
+
+
+
+
+
+query2 <- "
+  SELECT 
+    total_orders, 
+    COUNT(*) AS N
+FROM (
+    SELECT 
+        cid, 
+        COUNT(*) AS total_orders
+    FROM orders
+    GROUP BY cid
+) subquery
+GROUP BY total_orders
+ORDER BY total_orders;
+
+
+"
+
+
+result2 <- dbGetQuery(con_chocolate, query2)
+
+print(result2)
+
+
+
+
+
+query3 <- "
+  WITH top_candy_q1 AS (
+      SELECT 
+          pid, 
+          SUM(amount) AS total_orders
+      FROM orders
+      WHERE sale_date BETWEEN '2022-01-01' AND '2022-03-31'
+      GROUP BY pid
+      ORDER BY total_orders DESC
+      LIMIT 1
+  ),
+  top_sales_rep_q2 AS (
+      SELECT 
+          o.srid,
+          sr.Name AS sales_rep_name,
+          o.pid
+      FROM orders o
+      JOIN salesreps sr ON o.srid = sr.srid
+      WHERE o.sale_date BETWEEN '2022-04-01' AND '2022-06-30'
+      AND o.pid = (SELECT pid FROM top_candy_q1)
+      GROUP BY o.srid, sr.Name, o.pid
+      ORDER BY SUM(o.amount) DESC
+      LIMIT 1
+  )
+  SELECT 
+      p.candy_names AS candy_bar_name,
+      t.sales_rep_name
+  FROM top_candy_q1 c
+  JOIN products p ON c.pid = p.pid
+  JOIN top_sales_rep_q2 t ON c.pid = t.pid;
+  
+
+"
+
+result3 <- dbGetQuery(con_chocolate, query3)
+
+print(result3)
+
+dbDisconnect(con_chocolate)
+
+
+
+
+```
