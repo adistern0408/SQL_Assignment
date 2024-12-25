@@ -16,7 +16,12 @@ library(RSQLite)
 con_chocolate <- dbConnect(SQLite(), dbname = "C:\\Users\\רומי שטרנברג\\Desktop\\עדי לימודים בן גוריון\\שנה שלישית\\סמסטר א\\מיומנויות במדעי הנתונים\\מטלה SQL\\chocolate.sqlite")
 
 
-#The query aims to extract data on the total number of chocolate bars sold in 2022 by sales representatives who joined the company in 2010. It joins the salesreps #table (sales representatives) with the orders table (orders) using the srid column (sales representative ID). The query filters the data to include only sales #representatives who joined in 2010 and made sales during 2022 (defined as the date range from January 1 to December 31, 2022). It then calculates the total #quantity of chocolate bars sold by each sales representative and displays their name alongside the total quantity sold.
+#The query aims to extract data on the total number of chocolate bars sold in 2022 by sales representatives who joined the company in 2010  .
+#It joins the salesreps table (sales representatives) with the orders table (orders) using the srid column (sales representative ID)  .
+#The query filters the data to include only sales representatives who joined in 2010 and made sales during 2022  
+#(defined as the date range from January 1 to December 31, 2022)  . 
+#It then calculates the total quantity of chocolate bars sold by each sales representative
+#and displays their name alongside the total quantity sold  .
 
 query1 <- "
   SELECT salesreps.Name, SUM(orders.amount) AS total_candy_bars_sold
